@@ -1,25 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Book from './components/Book'
-
-const Filter = ({ filter, filterShown }) => (
-  <div>
-    Filter shown with:
-    <input
-      value={filter}
-      onChange={filterShown} />
-  </div>
-)
-
-const PersonForm = ({ newName, newNum, handleNameChange, handleNumChange, addPerson }) => (
-  <div><h3>Add a new entry</h3>
-    <form onSubmit={addPerson}>
-      <div>Name:   <input value={newName} onChange={handleNameChange} /></div>
-      <div>Number: <input value={newNum} onChange={handleNumChange} /></div>
-      <div><button type="submit">add</button></div>
-    </form>
-  </div>
-)
+import PersonForm from './components/PersonForm'
+import Filter from './components/Filter'
+import personService from './services/persons'
 
 const App = () => {
 
@@ -29,36 +12,57 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        console.log(response.data)
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
   const addPerson = (event) => {
     event.preventDefault()
-    console.log('event target:', event.target)
-    console.log('addPerson:', newName)
     const duplicate = persons.some(person => person.name.toLowerCase() === newName.toLowerCase())
     if (duplicate) {
       console.log('DUPLICATE FOUND')
-      window.alert(`${newName} is already added to phonebook`)
-    }
-    else {
+      const replace = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if (replace) {
+        const id = persons.find(person => person.name.toLowerCase() === newName.toLowerCase()).id
+        const newPerson = {
+          name: newName,
+          number: newNum,
+          id: id
+        }
+        personService
+          .update(newPerson.id, newPerson)
+          .then(returnedPerson =>{
+            setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+            setNewName('')
+            setNewNum('')
+          })
+      }
+    } else {
       const newPerson = {
         name: newName,
         number: newNum,
-        id: persons.length + 1
       }
-      const copy = [...persons].concat(newPerson)
-      console.log('copy:', copy)
-      setPersons(copy)
-      setNewName('')
-      setNewNum('')
+      personService
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNum('')
+        })
+    }
+  }
+
+  const deletePerson = (id) => {
+    const confirm = window.confirm(`Delete ${persons.find(person => person.id === id).name}?`)
+    if (confirm){
+      personService
+      .remove(id)
+      .then(
+        setPersons(persons.filter(person => person.id !== id))
+      )
     }
   }
 
@@ -77,7 +81,8 @@ const App = () => {
       <PersonForm
         newName={newName} handleNameChange={handleNameChange}
         newNum={newNum} handleNumChange={handleNumChange} addPerson={addPerson} />
-      <Book persons={filteredPersons} />
+      <Book persons={filteredPersons} 
+            del={deletePerson} />
     </div>
   )
 }
