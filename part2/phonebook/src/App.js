@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Book from './components/Book'
 
 const Filter = ({ filter, filterShown }) => (
@@ -22,15 +23,21 @@ const PersonForm = ({ newName, newNum, handleNameChange, handleNumChange, addPer
 
 const App = () => {
 
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', num: '040-123456' },
-    { name: 'Ada Lovelace', num: '39-44-5323523' },
-    { name: 'Dan Abramov', num: '12-43-234345' },
-    { name: 'Mary Poppendieck', num: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNum, setNewNum] = useState('')
   const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        console.log(response.data)
+        setPersons(response.data)
+      })
+  }, [])
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -44,7 +51,8 @@ const App = () => {
     else {
       const newPerson = {
         name: newName,
-        num: newNum
+        number: newNum,
+        id: persons.length + 1
       }
       const copy = [...persons].concat(newPerson)
       console.log('copy:', copy)

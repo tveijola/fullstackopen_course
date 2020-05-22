@@ -16,9 +16,9 @@ const Book = (props) => {
         <tbody>
           {props.persons.map(person =>
             <Number
-              key={person.name}
+              key={person.id}
               name={person.name}
-              num={person.num} />
+              num={person.number} />
           )}
         </tbody>
       </table>
