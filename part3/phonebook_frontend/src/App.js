@@ -79,7 +79,10 @@ const App = () => {
     }
     
     promise.then(() => {
-      setNotification(notify(`Added ${newName}`, false))
+      const msg = (replace)
+        ? `Modified ${newName}`
+        : `Added ${newName}`
+      setNotification(notify(msg, false))
       setTimeout(() => clearNotification(), 3000)
       clearForms()
     }).catch(error => {
