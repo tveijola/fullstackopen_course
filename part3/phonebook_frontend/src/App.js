@@ -61,7 +61,7 @@ const App = () => {
       return
     }
 
-    let promise;
+    let promise
     const newPerson = {
       name: newName,
       number: newNum
@@ -71,25 +71,33 @@ const App = () => {
       newPerson.id = persons.find(p => p.name.toLowerCase() === newName.toLowerCase()).id
       promise = personService
         .update(newPerson.id, newPerson)
-        .then(returnedPerson => setPersons(persons.map(p => p.id !== newPerson.id ? p : returnedPerson)))
+        .then(returnedPerson => {
+          if (returnedPerson === null) {
+            setPersons(persons.filter(p =>  p.id !== newPerson.id ))
+            setNotification(notify(`Person ${newPerson.name} was not found!`, true))
+          } else {
+            setPersons(persons.map(p => p.id !== returnedPerson.id ? p : returnedPerson))
+            setNotification(notify(`Modified ${returnedPerson.name}`, false))
+          }
+        })
     } else {
       promise = personService
         .create(newPerson)
-        .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNotification(notify(`Added ${returnedPerson.name}`, false))
+        })
     }
-    
-    promise.then(() => {
-      const msg = (replace)
-        ? `Modified ${newName}`
-        : `Added ${newName}`
-      setNotification(notify(msg, false))
-      setTimeout(() => clearNotification(), 3000)
-      clearForms()
-    }).catch(error => {
-      setNotification(notify(`Information of ${newName} has been deleted!`, true))
-      setTimeout(() => clearNotification, 5000)
-      refreshPhonebook();
-    })
+    promise
+      .then(() => {
+        setTimeout(() => clearNotification(), 3000)
+        clearForms()
+      })
+      .catch(error => {
+        setNotification(notify(error.response.data.error, true))
+        setTimeout(() => clearNotification(), 5000)
+        refreshPhonebook();
+      })
   }
 
   const deletePerson = (id) => {
