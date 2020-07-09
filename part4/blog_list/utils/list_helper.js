@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const { reduce } = require('lodash')
 
 const dummy = (blogs) => {
   return 1
