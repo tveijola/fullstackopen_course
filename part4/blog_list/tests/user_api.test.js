@@ -7,28 +7,14 @@ const testHelper = require('./test_helper')
 const bcrypt = require('bcrypt')
 
 beforeEach(async () => {
+  const salt = 10
+  let pass = ['salainen1', 'salainen2']
   await User.deleteMany({})
   for (const user of testHelper.users) {
+    user.passwordHash = await bcrypt.hash(pass.pop(), salt)
     const userObject = new User(user)
     await userObject.save()
   }
-})
-
-test('valid user can be created', async () => {
-  const usersAtStart = testHelper.users
-  const newUser = {
-    username: "newuser",
-    password: "newpassword"
-  }
-
-  await api
-    .post('/api/users')
-    .send(newUser)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
-
-  const usersAtEnd = await testHelper.usersInDb()
-  expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
 })
 
 test('usernames must be unique', async () => {
@@ -113,6 +99,23 @@ test('password must not be empty', async () => {
   expect(res.body.error).toContain('password must be at least 3 characters')
   const usersAtEnd = await testHelper.usersInDb()
   expect(usersAtEnd).toHaveLength(usersAtStart.length)
+})
+
+test('valid user can be created', async () => {
+  const usersAtStart = testHelper.users
+  const newUser = {
+    username: "newuser",
+    password: "newpassword"
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const usersAtEnd = await testHelper.usersInDb()
+  expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
 })
 
 afterAll(() => {

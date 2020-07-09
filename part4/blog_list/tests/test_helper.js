@@ -85,20 +85,14 @@ const blogs = [
   },
 ]
 
-const salt = 10
-const pass1 = "salainen1"
-const pass2 = "salainen2"
-
 const users = [
   {
     username: "tveijola",
     name: "Tommi Veijola",
-    password: bcrypt.hash(pass1, salt)
   },
   {
     username: "root",
     name: "superuser",
-    password: bcrypt.hash(pass2, salt)
   }
 ]
 
