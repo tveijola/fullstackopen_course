@@ -17,7 +17,7 @@ beforeEach(async () => {
   }
 })
 
-describe('username', async () => {
+describe('username', () => {
 
   test('usernames must be unique', async () => {
     const usersAtStart = testHelper.users
@@ -88,7 +88,7 @@ describe('username', async () => {
   })
 })
 
-describe('password', async () => {
+describe('password', () => {
 
   test('password must be at least 3 characters', async () => {
     const usersAtStart = testHelper.users
