@@ -18,7 +18,10 @@ const App = () => {
   const [user, setUser] = useState(null)
 
 
-  const notify = (message, isError) => ({ message, isError })
+  const notify = (message, isError) => {
+    setNotification({ message, isError })
+    setTimeout(() => clearNotification(), (isError) ? 3000 : 2000)
+  }
 
   const clearNotification = () => {
     setNotification({
@@ -55,11 +58,9 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      setNotification(notify(`Succesfully logged in: ${user.username}`, false))
-      setTimeout(() => clearNotification(), 2000)
+      notify(`Succesfully logged in: ${user.username}`, false)
     } catch (exception) {
-      setNotification(notify('Invalid username or password!', true))
-      setTimeout(() => clearNotification(), 3000)
+      notify('Invalid username or password!', true)
     }
   }
 
@@ -68,20 +69,53 @@ const App = () => {
     window.localStorage.removeItem('loggedInUser')
     blogService.setToken(null)
     setUser(null)
-    setNotification(notify('Logged out!', false))
-    setTimeout(() => clearNotification(), 2000)
+    notify('Logged out!', false)
   }
 
   const addBlog = async (blogObject) => {
     try {
       const response = await blogService.create(blogObject)
-      setBlogs(blogs.concat(response))
-      setNotification(notify(`Created blog: ${response.title} ${response.author}`, false))
-      setTimeout(() => clearNotification(), 2000)
+      const updatedBlogList = await blogService.getAll()
+      setBlogs(updatedBlogList)
+      notify(`Created blog: ${response.title} ${response.author}`, false)
       blogFormRef.current.toggleVisibility()
     } catch (exception) {
-      setNotification(notify('New blog must contain at least title or url', true))
-      setTimeout(() => clearNotification(), 3000)
+      notify('New blog must contain at least title or url', true)
+    }
+  }
+
+  const incrementLikes = async blog => {
+    try {
+      const modifiedBlog = {
+        creator: blog.creator.id,
+        likes: blog.likes + 1,
+        author: blog.author,
+        title: blog.title,
+        url: blog.url,
+        id: blog.id
+      }
+      const savedBlog = await blogService.put(modifiedBlog)
+      setBlogs(blogs.map(b => {
+        if (b.id === savedBlog.id) {
+          b.likes = savedBlog.likes
+        }
+        return b
+      }
+      ))
+    } catch (exception) {
+      notify(exception.message, true)
+    }
+  }
+
+  const removeBlog = async blog => {
+    try {
+      const result = window.confirm(`Remove blog ${blog.title} by ${blog.author}`)
+      if (result) {
+        await blogService.remove(blog)
+        setBlogs(blogs.filter(b => b.id !== blog.id))
+      }
+    } catch (exception) {
+      notify(exception.message, true)
     }
   }
 
@@ -117,10 +151,12 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} incrementLikes={incrementLikes} removeBlog={removeBlog} username={user.username} />
       )}
     </div>
   )
+
+  blogs.sort((a, b) => b.likes - a.likes)
 
   return (
     <div>

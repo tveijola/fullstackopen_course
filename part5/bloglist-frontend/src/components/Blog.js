@@ -1,18 +1,28 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const toggleDetails = () => {
     setShowDetails(!showDetails)
   }
 
-  const details = (blog) => {
+  const removeButton = () => {
+    if (username === blog.creator.username) {
+      return <button onClick={() => removeBlog(blog)}>Remove</button>
+    }
+  }
+
+  const details = () => {
     return (
       <div>
         {blog.url}<br/>
-        Likes: {blog.likes}<button style={{ marginLeft: 5 }}>Like</button><br/>
+        Likes: {blog.likes}
+        <button style={{ marginLeft: 5 }} onClick={() => {incrementLikes(blog)}}>
+          Like
+        </button><br/>
         {blog.creator.name}<br/>
+        {removeButton()}
       </div>
     )
   }
@@ -23,7 +33,7 @@ const Blog = ({ blog }) => {
       <button style={{ marginLeft: 5 }} onClick={toggleDetails}>
         {showDetails ? 'Hide Details' : 'View Details'}
       </button>
-      {showDetails && details(blog)}
+      {showDetails && details()}
     </div>
   )
 }
