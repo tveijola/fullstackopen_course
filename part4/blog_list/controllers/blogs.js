@@ -50,7 +50,7 @@ blogsRouter.delete('/:id', async (request, response) => {
   if (blogToDelete.creator.toString() === decodedToken.id.toString()) {
     await Blog.findByIdAndRemove(request.params.id)
     blogCreator.blogs = blogCreator.blogs.filter(b => b.toString() !== blogToDelete.id.toString())
-    blogCreator.save()
+    await blogCreator.save()
     return response.status(204).end()
   } else {
     return response.status(401).json({ error: 'only the blog creator can delete a blog' })
