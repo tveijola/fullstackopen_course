@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [notification, setNotification] = useState({
+    message: null,
+    isError: false
+  })
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -13,6 +19,15 @@ const App = () => {
   const [url, setUrl] = useState('')
 
   const [user, setUser] = useState(null)
+
+  const notify = (message, isError) => ({ message, isError })
+
+  const clearNotification = () => {
+    setNotification({
+      message: null,
+      isError: false
+    })
+  }
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -40,8 +55,11 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      setNotification(notify(`Succesfully logged in: ${user.username}`, false))
+      setTimeout(() => clearNotification(), 2000)
     } catch (exception) {
-      console.log(exception)
+      setNotification(notify('Invalid username or password!', true))
+      setTimeout(() => clearNotification(), 3000)
     }
   }
 
@@ -50,25 +68,35 @@ const App = () => {
     window.localStorage.removeItem('loggedInUser')
     blogService.setToken(null)
     setUser(null)
+    setNotification(notify('Logged out!', false))
+    setTimeout(() => clearNotification(), 2000)
   }
 
   const createBlog = async (event) => {
     event.preventDefault()
-    const newBlog = {
-      author: author,
-      title: title,
-      url: url
+    try {
+      const newBlog = {
+        author: author,
+        title: title,
+        url: url
+      }
+      const response = await blogService.create(newBlog)
+      setBlogs(blogs.concat(response))
+      setAuthor('')
+      setTitle('')
+      setUrl('')
+      setNotification(notify(`Created blog: ${response.title} ${response.author}`, false))
+      setTimeout(() => clearNotification(), 2000)
+    } catch (exception) {
+      setNotification(notify('New blog must contain at least title or url', true))
+      setTimeout(() => clearNotification(), 3000)
     }
-    const response = await blogService.create(newBlog)
-    setBlogs(blogs.concat(response))
-    setAuthor('')
-    setTitle('')
-    setUrl('')
   }
 
   const loginForm = () => (
     <div>
       <h1>Login to application</h1>
+      <Notification notification={notification} />
       <form onSubmit={handleLogin}>
         <div>
           Username
@@ -86,6 +114,7 @@ const App = () => {
   const blogForm = () => (
     <div>
       <h1>Blogs</h1>
+      <Notification notification={notification} />
       <form onSubmit={handleLogout}>
         <p>
           {user.name} Logged in
