@@ -152,10 +152,12 @@ describe('modifying a blog', () => {
     const modifiedBlog = { ...blogToUpdate }
     modifiedBlog.likes += 1
 
-    await api
-      .put(`/api/blogs/${blogToUpdate.id}`)
+    const res = await api
+      .put(`/api/blogs/${modifiedBlog.id}`)
       .send(modifiedBlog)
 
+    expect(res.body.creator).toEqual(blogToUpdate.creator.toString())
+    
     const blogsAtEnd = await testHelper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(testHelper.blogs.length)
     expect(blogsAtEnd).toContainEqual(modifiedBlog)
