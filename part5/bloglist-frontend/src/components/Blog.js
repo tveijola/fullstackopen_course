@@ -9,19 +9,23 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
 
   const removeButton = () => {
     if (username === blog.creator.username) {
-      return <button onClick={() => removeBlog(blog)}>Remove</button>
+      return (
+        <button style={{ background: 'red' }} onClick={() => removeBlog(blog)}>
+          Remove
+        </button>
+      )
     }
   }
 
   const details = () => {
     return (
       <div>
-        {blog.url}<br/>
+        {blog.url}<br />
         Likes: {blog.likes}
-        <button style={{ marginLeft: 5 }} onClick={() => {incrementLikes(blog)}}>
+        <button style={{ marginLeft: 5 }} onClick={() => { incrementLikes(blog) }}>
           Like
-        </button><br/>
-        {blog.creator.name}<br/>
+        </button><br />
+        {blog.creator.name}<br />
         {removeButton()}
       </div>
     )
