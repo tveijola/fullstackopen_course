@@ -108,3 +108,6 @@ dist
 
 # Personal memo
 dependency_memo.txt
+
+# VS code settings
+.vscode
