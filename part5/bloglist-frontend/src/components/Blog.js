@@ -11,7 +11,7 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
   const removeButton = () => {
     if (username === blog.creator.username) {
       return (
-        <button style={{ background: 'red' }} onClick={() => removeBlog(blog)}>
+        <button className="removeButton" style={{ background: 'red' }} onClick={() => removeBlog(blog)}>
           Remove
         </button>
       )
@@ -23,7 +23,7 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
       <div>
         {blog.url}<br />
         Likes: {blog.likes}
-        <button style={{ marginLeft: 5 }} onClick={() => { incrementLikes(blog) }}>
+        <button className="likeButton" style={{ marginLeft: 5 }} onClick={() => { incrementLikes(blog) }}>
           Like
         </button><br />
         {blog.creator.name}<br />
@@ -35,7 +35,7 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
   return (
     <div className="blog">
       {blog.title} {blog.author}
-      <button style={{ marginLeft: 5 }} onClick={toggleDetails}>
+      <button className="toggleDetailsButton" style={{ marginLeft: 5 }} onClick={toggleDetails}>
         {showDetails ? 'Hide Details' : 'View Details'}
       </button>
       {showDetails && details()}
