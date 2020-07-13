@@ -111,3 +111,6 @@ dependency_memo.txt
 
 # VS code settings
 .vscode
+
+# Cypress videos
+cypress/videos
