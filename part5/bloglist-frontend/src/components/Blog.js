@@ -20,14 +20,20 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
 
   const details = () => {
     return (
-      <div>
-        {blog.url}<br />
-        Likes: {blog.likes}
-        <button className="likeButton" style={{ marginLeft: 5 }} onClick={() => { incrementLikes(blog) }}>
-          Like
-        </button><br />
-        {blog.creator.name}<br />
-        {removeButton()}
+      <div className="blogDetails">
+        <div>{blog.url}</div>
+        <div className="likes">
+          Likes: {blog.likes}
+          <button className="likeButton" style={{ marginLeft: 5 }} onClick={() => { incrementLikes(blog) }}>
+            Like
+          </button>
+        </div>
+        <div>
+          {blog.creator.name}
+        </div>
+        <div>
+          {removeButton()}
+        </div>
       </div>
     )
   }
