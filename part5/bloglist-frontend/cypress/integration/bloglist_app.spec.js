@@ -35,4 +35,20 @@ describe('Blog app', function() {
         .and('have.css', 'color', 'rgb(255, 0, 0)')
     })
   })
+
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.get('#loginUsername').type('root')
+      cy.get('#loginPassword').type('root')
+      cy.get('#login-button').click()
+    })
+    it('A blog can be created', function() {
+      cy.get('#toggle-blogform-visibility-button').click()
+      cy.get('#titleInput').type('Title Written By Cypress')
+      cy.get('#authorInput').type('Cypress Writer')
+      cy.get('#urlInput').type('http://www.cypress.io/blog')
+      cy.get('#create-blog-button').click()
+      cy.contains('Title Written By Cypress -- Cypress Writer')
+    })
+  })
 })

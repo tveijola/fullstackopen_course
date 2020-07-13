@@ -34,7 +34,7 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
 
   return (
     <div className="blog">
-      {blog.title} {blog.author}
+      {blog.title} -- {blog.author}
       <button className="toggleDetailsButton" style={{ marginLeft: 5 }} onClick={toggleDetails}>
         {showDetails ? 'Hide Details' : 'View Details'}
       </button>
