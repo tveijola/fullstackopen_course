@@ -9,13 +9,13 @@ export const createAnecdote = anecdote => (
 
 export const incrementVotes = anecdote => {
   return async dispatch => {
-    const updatedAnecdote = await anecdoteService.put({
+    await anecdoteService.put({
       ...anecdote,
       votes: anecdote.votes + 1
     })
     dispatch({
       type: 'INCREMENT_VOTES',
-      data: updatedAnecdote
+      data: { id: anecdote.id }
     })
   }
 }
@@ -34,9 +34,9 @@ const reducer = (state = [], action) => {
   switch (action.type) {
     case 'INCREMENT_VOTES': {
       return state.map(obj =>
-        obj.id === action.data.id ?
-          { ...obj, votes: obj.votes + 1 } :
-          { ...obj }
+        obj.id === action.data.id
+          ? { ...obj, votes: obj.votes + 1 }
+          : obj
       )
     }
     case 'INIT_ANECDOTES':
