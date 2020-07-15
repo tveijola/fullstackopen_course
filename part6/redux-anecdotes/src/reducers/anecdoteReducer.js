@@ -34,9 +34,6 @@ export const incrementVotes = id => (
 )
 
 const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
-
   switch (action.type) {
     case 'INCREMENT_VOTES': {
       return state.map(obj =>

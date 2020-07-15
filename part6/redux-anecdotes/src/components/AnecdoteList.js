@@ -8,7 +8,6 @@ const AnecdoteList = () => {
   anecdotes.sort((anec1, anec2) => anec2.votes - anec1.votes)
 
   const vote = (id) => {
-    console.log('vote', id)
     dispatch(incrementVotes(id))
   }
 
