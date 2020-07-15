@@ -7,12 +7,18 @@ export const createAnecdote = anecdote => (
   }
 )
 
-export const incrementVotes = id => (
-  {
-    type: 'INCREMENT_VOTES',
-    data: { id }
+export const incrementVotes = anecdote => {
+  return async dispatch => {
+    const updatedAnecdote = await anecdoteService.put({
+      ...anecdote,
+      votes: anecdote.votes + 1
+    })
+    dispatch({
+      type: 'INCREMENT_VOTES',
+      data: updatedAnecdote
+    })
   }
-)
+}
 
 export const initializeAnecdotes = () => {
   return async dispatch => {
