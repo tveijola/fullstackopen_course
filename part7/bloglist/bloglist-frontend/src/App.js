@@ -7,19 +7,20 @@ import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 
 import { setNotification, clearNotification } from './reducers/notificationReducer'
+import { fetchBlogs } from './reducers/blogReducer'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
-  const notification = useSelector(state => state)
+  const notification = useSelector(state => state.notification)
+  const blogs = useSelector(state => state.blogs)
 
   const notify = (message, isError) => {
     dispatch(setNotification(message, isError))
@@ -27,10 +28,8 @@ const App = () => {
   }
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
+    dispatch(fetchBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInUser')
@@ -68,53 +67,6 @@ const App = () => {
     notify('Logged out!', false)
   }
 
-  const addBlog = async (blogObject) => {
-    try {
-      const response = await blogService.create(blogObject)
-      const updatedBlogList = await blogService.getAll()
-      setBlogs(updatedBlogList)
-      notify(`Created blog: ${response.title} ${response.author}`, false)
-      blogFormRef.current.toggleVisibility()
-    } catch (exception) {
-      notify('New blog must contain at least title or url', true)
-    }
-  }
-
-  const incrementLikes = async blog => {
-    try {
-      const modifiedBlog = {
-        creator: blog.creator.id,
-        likes: blog.likes + 1,
-        author: blog.author,
-        title: blog.title,
-        url: blog.url,
-        id: blog.id
-      }
-      const savedBlog = await blogService.put(modifiedBlog)
-      setBlogs(blogs.map(b => {
-        if (b.id === savedBlog.id) {
-          b.likes = savedBlog.likes
-        }
-        return b
-      }
-      ))
-    } catch (exception) {
-      notify(exception.message, true)
-    }
-  }
-
-  const removeBlog = async blog => {
-    try {
-      const result = window.confirm(`Remove blog ${blog.title} by ${blog.author}`)
-      if (result) {
-        await blogService.remove(blog)
-        setBlogs(blogs.filter(b => b.id !== blog.id))
-      }
-    } catch (exception) {
-      notify(exception.message, true)
-    }
-  }
-
   const loginForm = () => (
     <div>
       <h1>Login to application</h1>
@@ -144,10 +96,10 @@ const App = () => {
         </p>
       </form>
       <Togglable buttonLabel='New Blog' ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
+        <BlogForm />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} incrementLikes={incrementLikes} removeBlog={removeBlog} username={user.username} />
+        <Blog key={blog.id} blog={blog} username={user.username} />
       )}
     </div>
   )
