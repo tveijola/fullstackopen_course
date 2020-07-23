@@ -5,6 +5,15 @@ const blogReducer = (state = [], action) => {
       return [...state, action.data]
     case 'FETCH_BLOGS':
       return action.data
+    case 'INCREMENT_LIKES':
+      return state.map(b => {
+        if (b.id === action.data.id) {
+          b.likes = action.data.likes
+        }
+        return b
+      })
+    case 'REMOVE_BLOG':
+      return state.filter(b => b.id !== action.data)
     default:
       return state
   }
@@ -27,6 +36,34 @@ export const fetchBlogs = () => {
       type: 'FETCH_BLOGS',
       data: blogs
     })
+  }
+}
+
+export const likeBlog = (blogObject) => {
+  return async dispatch => {
+    const modifiedBlog = {
+      ...blogObject,
+      creator: blogObject.creator.id,
+      likes: blogObject.likes + 1,
+    }
+    const savedBlog = await blogService.put(modifiedBlog)
+    dispatch({
+      type: 'INCREMENT_LIKES',
+      data: savedBlog
+    })
+  }
+}
+
+export const removeBlog = (blogObject) => {
+  return async dispatch => {
+    const result = window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}`)
+    if (result) {
+      await blogService.remove(blogObject)
+      dispatch({
+        type: 'REMOVE_BLOG',
+        data: blogObject.id
+      })
+    }
   }
 }
 

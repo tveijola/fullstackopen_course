@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { likeBlog, removeBlog } from '../reducers/blogReducer'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
+const Blog = ({ blog, username }) => {
   const [showDetails, setShowDetails] = useState(false)
+
+  const dispatch = useDispatch()
 
   const toggleDetails = () => {
     setShowDetails(!showDetails)
@@ -11,7 +15,7 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
   const removeButton = () => {
     if (username === blog.creator.username) {
       return (
-        <button className="removeButton" style={{ background: 'red' }} onClick={() => removeBlog(blog)}>
+        <button className="removeButton" style={{ background: 'red' }} onClick={() => dispatch(removeBlog(blog))}>
           Remove
         </button>
       )
@@ -24,7 +28,7 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
         <div>{blog.url}</div>
         <div className="likes">
           Likes: {blog.likes}
-          <button className="likeButton" style={{ marginLeft: 5 }} onClick={() => { incrementLikes(blog) }}>
+          <button className="likeButton" style={{ marginLeft: 5 }} onClick={() => dispatch(likeBlog(blog))}>
             Like
           </button>
         </div>
@@ -51,8 +55,6 @@ const Blog = ({ blog, incrementLikes, removeBlog, username }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  incrementLikes: PropTypes.func.isRequired,
-  removeBlog: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired
 }
 
