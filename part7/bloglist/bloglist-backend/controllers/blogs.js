@@ -4,7 +4,10 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('creator', { username: 1, name: 1, id: 1 })
+  const blogs = await Blog
+    .find({})
+    .populate('creator', { username: 1, name: 1, id: 1 })
+
   response.json(blogs.map(blog => blog.toJSON()))
 })
 
@@ -31,9 +34,13 @@ blogsRouter.post('/', async (request, response) => {
     const savedBlog = await blog.save()
     creator.blogs = creator.blogs.concat(savedBlog._id)
     await creator.save()
+    const populatedBlog = await Blog
+      .findById(savedBlog._id)
+      .populate('creator', { username: 1, name: 1, id: 1 })
+
     response
       .status(201)
-      .json(savedBlog.toJSON())
+      .json(populatedBlog.toJSON())
   }
 })
 
@@ -59,15 +66,17 @@ blogsRouter.delete('/:id', async (request, response) => {
 
 blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
-  const blog = 
-  {
+  const blog = {
     creator: body.creator,
     author: body.author,
     title: body.title,
     url: body.url,
     likes: body.likes
   }
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  const updatedBlog = await Blog
+    .findByIdAndUpdate(request.params.id, blog, { new: true })
+    .populate('creator', { username: 1, name: 1, id: 1 })
+
   response.json(updatedBlog.toJSON())
 })
 
