@@ -12,7 +12,7 @@ const SingleBlogView = ({ blog }) => {
 
   return (
     <div>
-      <h2>{blog.title}</h2>
+      <h2>{blog.title} -- {blog.author}</h2>
       <div>{blog.url}</div>
       <div>
         {blog.likes} likes
