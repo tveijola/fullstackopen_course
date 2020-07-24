@@ -1,16 +1,19 @@
 import React, { useEffect } from 'react'
-import { fetchUsers } from '../reducers/userReducer'
-import { useDispatch, useSelector } from 'react-redux'
 import User from './User'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchUsers } from '../reducers/userReducer'
 
 const UsersView = () => {
 
+  const users = useSelector(state => state.users)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(fetchUsers())
   }, [dispatch])
 
-  const users = useSelector(state => state.users)
+  if (!users) {
+    return null
+  }
 
   return (
     <div>
