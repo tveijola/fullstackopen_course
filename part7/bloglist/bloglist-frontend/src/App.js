@@ -2,19 +2,21 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Switch, Route, useRouteMatch } from 'react-router-dom'
 
-import LoginForm from './components/LoginForm'
+import BlogView from './components/BlogView'
 import Header from './components/Header'
+import LoginForm from './components/LoginForm'
 import SingleBlogView from './components/SingleBlogView'
+import SingleUserView from './components/SingleUserView'
+import UsersView from './components/UsersView'
 
 import { fetchBlogs } from './reducers/blogReducer'
 import { setLoggedInUser } from './reducers/loginReducer'
+import { fetchUsers } from './reducers/userReducer'
+
 import blogService from './services/blogs'
 
 import './index.css'
-import BlogView from './components/BlogView'
-import UsersView from './components/UsersView'
-import SingleUserView from './components/SingleUserView'
-import { fetchUsers } from './reducers/userReducer'
+
 
 const App = () => {
 
@@ -56,9 +58,6 @@ const App = () => {
         </Route>
         <Route path="/blogs/:id">
           <SingleBlogView blog={specifiedBlog} />
-        </Route>
-        <Route path="/blogs/">
-          <BlogView />
         </Route>
         <Route path="/">
           {loggedInUser === null
