@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Notification from './Notification'
-import { loginUser } from '../reducers/userReducer'
+import { loginUser } from '../reducers/loginReducer'
 
 import { useDispatch, useSelector } from 'react-redux'
 

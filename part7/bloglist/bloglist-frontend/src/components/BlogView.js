@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import Notification from './Notification'
-import { logoutUser } from '../reducers/userReducer'
+import { logoutUser } from '../reducers/loginReducer'
 import Togglable from './Togglable'
 import BlogForm from './BlogForm'
 import Blog from './Blog'
@@ -11,7 +11,7 @@ const BlogView = () => {
 
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
-  const user = useSelector(state => state.user)
+  const user = useSelector(state => state.loggedInUser)
   const blogs = useSelector(state => state.blogs)
 
   const blogFormRef = useRef()
