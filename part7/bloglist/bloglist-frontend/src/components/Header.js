@@ -2,6 +2,7 @@ import React from 'react'
 import Notification from './Notification'
 import { useSelector, useDispatch } from 'react-redux'
 import { logoutUser } from '../reducers/loginReducer'
+import { Link } from 'react-router-dom'
 
 const Header = () => {
 
@@ -20,14 +21,16 @@ const Header = () => {
 
   return (
     <div>
+      <div>
+        <Link style={{ paddingLeft: 10 }} to="/">Blogs</Link>
+        <Link style={{ paddingLeft: 10 }} to="/users/">Users</Link>
+        <i style={{ paddingLeft: 10 }}>{loggedInUser.name} Logged in</i>
+        <button style={{ marginLeft: 10 }} onClick={handleLogout} id="logoutButton" type="submit">
+          Logout
+        </button>
+      </div>
       <h1>Blogs</h1>
       <Notification notification={notification} />
-      <form onSubmit={handleLogout}>
-        <p>
-          {loggedInUser.name} Logged in
-          <button style={{ marginLeft: 5 }} id="logoutButton" type="submit">Logout</button>
-        </p>
-      </form>
     </div>
   )
 }
