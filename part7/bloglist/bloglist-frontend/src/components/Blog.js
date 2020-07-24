@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { likeBlog, removeBlog } from '../reducers/blogReducer'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ blog, username }) => {
   const [showDetails, setShowDetails] = useState(false)
@@ -44,7 +45,9 @@ const Blog = ({ blog, username }) => {
 
   return (
     <div className="blog">
-      {blog.title} -- {blog.author}
+      <Link to={`/blogs/${blog.id}`}>
+        {blog.title} -- {blog.author}
+      </Link>
       <button className="toggleDetailsButton" style={{ marginLeft: 5 }} onClick={toggleDetails}>
         {showDetails ? 'Hide Details' : 'View Details'}
       </button>
