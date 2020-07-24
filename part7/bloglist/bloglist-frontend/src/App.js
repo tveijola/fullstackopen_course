@@ -1,6 +1,13 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import {
+  BrowserRouter as Router,
+  Switch, Route
+} from 'react-router-dom'
+
 import LoginForm from './components/LoginForm'
+import Header from './components/Header'
+
 import { fetchBlogs } from './reducers/blogReducer'
 import { setLoggedInUser } from './reducers/loginReducer'
 import blogService from './services/blogs'
@@ -25,12 +32,19 @@ const App = () => {
   }, [dispatch])
 
   return (
-    <div>
-      {user === null
-        ? <LoginForm />
-        : <BlogView />}
-      <UsersView />
-    </div>
+    <Router>
+      <Header />
+      <Switch>
+        <Route path="/users">
+          <UsersView />
+        </Route>
+        <Route path="/">
+          {user === null
+            ? <LoginForm />
+            : <BlogView />}
+        </Route>
+      </Switch>
+    </Router>
   )
 }
 

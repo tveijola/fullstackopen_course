@@ -11,7 +11,6 @@ const UsersView = () => {
   }, [dispatch])
 
   const users = useSelector(state => state.users)
-  console.log(users)
 
   return (
     <div>

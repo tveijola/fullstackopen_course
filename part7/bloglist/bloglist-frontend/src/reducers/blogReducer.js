@@ -34,7 +34,7 @@ export const createBlog = (blogObject) => {
         type: 'CREATE_BLOG',
         data: response
       })
-      notify(dispatch, `Created blog: ${response.title} ${response.author}`, false)
+      notify(dispatch, `Created blog: ${response.title} by ${response.author}`, false)
     } catch (exception) {
       notify(dispatch, 'New blog must contain at least title or url', true)
     }
