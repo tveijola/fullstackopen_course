@@ -21,6 +21,13 @@ const blogReducer = (state = [], action) => {
       })
     case 'REMOVE_BLOG':
       return state.filter(b => b.id !== action.data)
+    case 'COMMENT_BLOG':
+      return state.map(b => {
+        if (b.id === action.data.id) {
+          b.comments = [...b.comments, action.data.comment]
+        }
+        return b
+      })
     default:
       return state
   }
@@ -82,6 +89,23 @@ export const removeBlog = (blogObject) => {
         })
       }
     } catch (exception) {
+      notify(dispatch, exception.message, true)
+    }
+  }
+}
+
+export const commentBlog = (blogId, comment) => {
+  return async dispatch => {
+    try {
+      await blogService.comment(blogId, comment)
+      dispatch({
+        type: 'COMMENT_BLOG',
+        data: {
+          id: blogId,
+          comment
+        }
+      })
+    } catch(exception) {
       notify(dispatch, exception.message, true)
     }
   }
