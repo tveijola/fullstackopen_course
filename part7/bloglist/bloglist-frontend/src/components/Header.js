@@ -21,7 +21,7 @@ const Header = () => {
 
   return (
     <div>
-      <div>
+      <div style={{ padding: 10, backgroundColor: 'lightgray' }}>
         <Link style={{ paddingLeft: 10 }} to="/">Blogs</Link>
         <Link style={{ paddingLeft: 10 }} to="/users/">Users</Link>
         <i style={{ paddingLeft: 10 }}>{loggedInUser.name} Logged in</i>
@@ -29,7 +29,7 @@ const Header = () => {
           Logout
         </button>
       </div>
-      <h1>Blogs</h1>
+      <h1>Blog Application</h1>
       <Notification notification={notification} />
     </div>
   )
