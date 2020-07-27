@@ -21,6 +21,12 @@ const SingleBlogView = ({ blog }) => {
         </button>
       </div>
       <div>Added by {blog.creator.name}</div>
+      <h3>Comments</h3>
+      <ul>
+        {blog.comments.map((comment, index) => (
+          <li key={index}>{comment}</li>
+        ))}
+      </ul>
     </div>
   )
 }
