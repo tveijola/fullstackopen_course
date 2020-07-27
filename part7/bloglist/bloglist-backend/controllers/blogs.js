@@ -85,9 +85,6 @@ blogsRouter.post('/:id/comments', async (request, response) => {
   const body = request.body
   const blogToComment = await Blog.findById(request.params.id)
   blogToComment.comments = [...blogToComment.comments, body.comment]
-  console.log({
-    ...blogToComment
-  })
   const updatedBlog = await Blog
     .findByIdAndUpdate(request.params.id, blogToComment, { new: true })
     .populate('creator', { username: 1, name: 1, id: 1 })
