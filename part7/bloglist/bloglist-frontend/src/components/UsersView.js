@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import User from './User'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUsers } from '../reducers/userReducer'
+import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper } from '@material-ui/core'
 
 const UsersView = () => {
 
@@ -18,19 +19,21 @@ const UsersView = () => {
   return (
     <div>
       <h2>Users</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Blogs created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <User key={user.id} user={user} />
-          ))}
-        </tbody>
-      </table>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell></TableCell>
+              <TableCell>Blogs created</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map(user => (
+              <User key={user.id} user={user} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 }

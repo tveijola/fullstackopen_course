@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { createBlog } from '../reducers/blogReducer'
 import { useDispatch } from 'react-redux'
+import { TextField, Button } from '@material-ui/core'
 
 const BlogForm = ({ toggleRef }) => {
   const [title, setTitle] = useState('')
@@ -26,20 +27,17 @@ const BlogForm = ({ toggleRef }) => {
   return (
     <div>
       <h2>Create new blog</h2>
-      <form id="createBlogForm" onSubmit={addBlog}>
+      <form onSubmit={addBlog}>
         <div>
-          Title:
-          <input id="titleInput" type="text" value={title} name="Title" onChange={({ target }) => setTitle(target.value)} />
+          <TextField label="Title" onChange={({ target }) => setTitle(target.value)} />
         </div>
         <div>
-          Author:
-          <input id="authorInput" type="text" value={author} name="Author" onChange={({ target }) => setAuthor(target.value)} />
+          <TextField label="Author" onChange={({ target }) => setAuthor(target.value)} />
         </div>
         <div>
-          Url:
-          <input id="urlInput" type="text" value={url} name="Url" onChange={({ target }) => setUrl(target.value)} />
+          <TextField label="Url" onChange={({ target }) => setUrl(target.value)} />
         </div>
-        <button id="create-blog-button" type="submit">Create</button>
+        <Button style={{ margin: 5 }} variant="contained" color="primary" type="submit">Create</Button>
       </form>
     </div>
   )

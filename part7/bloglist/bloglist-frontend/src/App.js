@@ -13,10 +13,9 @@ import { fetchBlogs } from './reducers/blogReducer'
 import { setLoggedInUser } from './reducers/loginReducer'
 import { fetchUsers } from './reducers/userReducer'
 
+import { Container } from '@material-ui/core'
+
 import blogService from './services/blogs'
-
-import './index.css'
-
 
 const App = () => {
 
@@ -47,7 +46,7 @@ const App = () => {
     : null
 
   return (
-    <div>
+    <Container>
       <Header />
       <Switch>
         <Route path="/users/:id">
@@ -65,7 +64,7 @@ const App = () => {
             : <BlogView />}
         </Route>
       </Switch>
-    </div>
+    </Container>
   )
 }
 

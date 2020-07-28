@@ -1,16 +1,17 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { TableRow, TableCell } from '@material-ui/core'
 
 const User = (props) => {
   return (
-    <tr>
-      <td>
+    <TableRow>
+      <TableCell>
         <Link to={`/users/${props.user.id}`}>
           {props.user.name}
         </Link>
-      </td>
-      <td>{props.user.blogs.length}</td>
-    </tr>
+      </TableCell>
+      <TableCell>{props.user.blogs.length}</TableCell>
+    </TableRow>
   )
 }
 

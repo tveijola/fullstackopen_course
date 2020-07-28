@@ -3,6 +3,7 @@ import Notification from './Notification'
 import { useSelector, useDispatch } from 'react-redux'
 import { logoutUser } from '../reducers/loginReducer'
 import { Link } from 'react-router-dom'
+import { AppBar, Toolbar, Button } from '@material-ui/core'
 
 const Header = () => {
 
@@ -21,14 +22,20 @@ const Header = () => {
 
   return (
     <div>
-      <div style={{ padding: 10, backgroundColor: 'lightgray' }}>
-        <Link style={{ paddingLeft: 10 }} to="/">Blogs</Link>
-        <Link style={{ paddingLeft: 10 }} to="/users/">Users</Link>
-        <i style={{ paddingLeft: 10 }}>{loggedInUser.name} Logged in</i>
-        <button style={{ marginLeft: 10 }} onClick={handleLogout} id="logoutButton" type="submit">
-          Logout
-        </button>
-      </div>
+      <AppBar position="static">
+        <Toolbar>
+          <Button variant="outlined" color="inherit" component={Link} to="/">
+            Blogs
+          </Button>
+          <Button variant="outlined" color="inherit" component={Link} to="/users/">
+            Users
+          </Button>
+          <em style={{ padding: 15 }}>{loggedInUser.name} Logged in</em>
+          <Button variant="outlined" color="inherit" onClick={handleLogout} id="logoutButton" type="submit">
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
       <h1>Blog Application</h1>
       <Notification notification={notification} />
     </div>

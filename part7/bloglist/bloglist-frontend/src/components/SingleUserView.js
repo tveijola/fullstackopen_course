@@ -1,19 +1,24 @@
 import React from 'react'
+import { Card, CardHeader, CardContent, Typography, Divider } from '@material-ui/core'
 
 const SingleUserView = ({ user }) => {
   if (!user) {
     return null
   }
+
   return (
-    <div>
-      <h2>{user.name}</h2>
-      <h3>Added blogs</h3>
-      <ul>
-        {user.blogs.map(b =>
-          <li key={b.id}>{b.title}</li>
-        )}
-      </ul>
-    </div>
+    <Card style={{ backgroundColor: 'lightgray' }} raised={true} variant="outlined">
+      <CardHeader title={user.name}/>
+      <Divider />
+      <CardContent>
+        <Typography>Added blogs</Typography>
+        <ul>
+          {user.blogs.map(b =>
+            <li key={b.id}>{b.title}</li>
+          )}
+        </ul>
+      </CardContent>
+    </Card>
   )
 }
 
