@@ -29,13 +29,13 @@ const BlogForm = ({ toggleRef }) => {
       <h2>Create new blog</h2>
       <form onSubmit={addBlog}>
         <div>
-          <TextField label="Title" onChange={({ target }) => setTitle(target.value)} />
+          <TextField label="Title" value={title} onChange={({ target }) => setTitle(target.value)} />
         </div>
         <div>
-          <TextField label="Author" onChange={({ target }) => setAuthor(target.value)} />
+          <TextField label="Author" value={author} onChange={({ target }) => setAuthor(target.value)} />
         </div>
         <div>
-          <TextField label="Url" onChange={({ target }) => setUrl(target.value)} />
+          <TextField label="Url" value={url} onChange={({ target }) => setUrl(target.value)} />
         </div>
         <Button style={{ margin: 5 }} variant="contained" color="primary" type="submit">Create</Button>
       </form>

@@ -44,7 +44,7 @@ const SingleBlogView = ({ blog }) => {
           ))}
         </ul>
         <form onSubmit={addComment}>
-          <TextField label="Comment" onChange={({ target }) => setComment(target.value)} />
+          <TextField label="Comment" value={comment} onChange={({ target }) => setComment(target.value)} />
           <Button variant="contained" type="submit" color="primary">Add comment</Button>
         </form>
       </CardContent>
