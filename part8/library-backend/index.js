@@ -1,4 +1,5 @@
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, UserInputError, gql } = require('apollo-server')
+const { v1: uuid } = require('uuid')
 
 let authors = [
   {
@@ -99,6 +100,15 @@ const typeDefs = gql`
     bookCount: Int
   }
 
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]!
+    ): Book
+  }
+
   type Query {
     bookCount: Int!
     authorCount: Int!
@@ -130,6 +140,24 @@ const resolvers = {
           ? bookCount + 1
           : bookCount
       ), 0)
+    }
+  },
+  Mutation: {
+    addBook: (root, args) => {
+      if (books.some(b => b.title === args.title && b.author === args.author)) {
+        throw new UserInputError('A book with the given title by the given author already in library!', {
+          invalidArgs: [args.title, args.author]
+        })
+      }
+      const book = { ...args, id: uuid() }
+      books = books.concat(book)
+      if (!authors.some(a => a.name === args.author)) {
+        authors = authors.concat({
+          name: args.author,
+          id: uuid()
+        })
+      }
+      return book
     }
   }
 }
