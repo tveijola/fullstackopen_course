@@ -5,8 +5,6 @@ const Books = (props) => {
     return null
   }
 
-  const books = []
-
   return (
     <div>
       <h2>books</h2>
@@ -22,7 +20,7 @@ const Books = (props) => {
               published
             </th>
           </tr>
-          {books.map(a =>
+          {props.books.map(a =>
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author}</td>
