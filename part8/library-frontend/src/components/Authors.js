@@ -34,6 +34,31 @@ const Authors = (props) => {
     }
   })
 
+  const addBookForm = () => {
+    return (
+      <div>
+        <h3>Set birthyear</h3>
+        <form onSubmit={setBirthyear}>
+          <div>
+            name
+          <Select
+              value={selectedAuthor}
+              options={options}
+              onChange={(selectedAuthor) => setSelectedAuthor(selectedAuthor)} />
+          </div>
+          <div>
+            born
+          <input value={born}
+              onChange={({ target }) => setBorn(target.value)} />
+          </div>
+          <button type='submit'>
+            update author
+        </button>
+        </form>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2>authors</h2>
@@ -57,26 +82,7 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
-
-      <h3>Set birthyear</h3>
-      <form onSubmit={setBirthyear}>
-        <div>
-          name
-          <Select
-            value={selectedAuthor}
-            options={options}
-            onChange={(selectedAuthor) => setSelectedAuthor(selectedAuthor)} />
-        </div>
-        <div>
-          born
-          <input value={born}
-            onChange={({ target }) => setBorn(target.value)} />
-        </div>
-        <button type='submit'>
-          update author
-        </button>
-      </form>
-
+      {props.token ? addBookForm() : null}
     </div>
   )
 }
