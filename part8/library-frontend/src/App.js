@@ -24,6 +24,12 @@ const App = () => {
       setUser(result.data.me)
     }
   }, [result])
+  
+  useEffect(() => {
+    (token)
+      ? getUser()
+      : setUser(null)
+  }, [token]) // eslint-disable-line
 
   // Check the local storage for a token
   useEffect(() => {
@@ -40,20 +46,13 @@ const App = () => {
     client.resetStore()
   }
 
-  const getRecommended = () => {
-    if (!user) {
-      getUser()
-    }
-    setPage('recommend')
-  }
-
   const loggedInView = () => {
     return (
       <div>
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         <button onClick={() => setPage('add')}>add book</button>
-        <button onClick={getRecommended}>recommend</button>
+        <button onClick={() => setPage('recommend')}>recommend</button>
         <button onClick={() => logout()}>logout</button>
       </div>
     )
