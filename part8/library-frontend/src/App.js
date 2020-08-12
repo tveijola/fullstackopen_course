@@ -26,9 +26,9 @@ const App = () => {
   }, [result])
   
   useEffect(() => {
-    (token)
-      ? getUser()
-      : setUser(null)
+    if (token) {
+      getUser()
+    }
   }, [token]) // eslint-disable-line
 
   // Check the local storage for a token
