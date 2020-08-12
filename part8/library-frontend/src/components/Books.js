@@ -1,15 +1,34 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { ALL_BOOKS } from '../queries'
+import { useLazyQuery } from '@apollo/client'
 
 const Books = (props) => {
 
   const [filterGenre, setFilterGenre] = useState(null)
+  const [books, setBooks] = useState(null)
+
+  const [getBooks, result] = useLazyQuery(ALL_BOOKS)
+
+  useEffect(() => {
+    if (result.data) {
+      setBooks(result.data.allBooks)
+    }
+  }, [result])
 
   if (!props.show) {
     return null
   }
 
+  if (!result.called) {
+    getBooks()
+  }
+
+  if (!books) {
+    return <div>loading...</div>
+  }
+
   const allGenres = []
-  props.books.forEach(book => {
+  books.forEach(book => {
     book.genres.forEach(genre => {
       if (!allGenres.includes(genre)) {
         allGenres.push(genre)
@@ -18,10 +37,10 @@ const Books = (props) => {
   })
 
   const filteredBooks = filterGenre
-    ? props.books.filter(book => {
+    ? books.filter(book => {
       return book.genres.some(genre => filterGenre.includes(genre))
     })
-    : props.books
+    : books
 
   const filterMessage = () => {
     return (

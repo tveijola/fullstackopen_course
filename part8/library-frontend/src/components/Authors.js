@@ -1,18 +1,34 @@
 
-import React, { useState } from 'react'
-import { EDIT_BIRTHYEAR } from '../queries'
-import { useMutation } from '@apollo/client'
+import React, { useState, useEffect } from 'react'
+import { EDIT_BIRTHYEAR, ALL_AUTHORS } from '../queries'
+import { useLazyQuery, useMutation } from '@apollo/client'
 import Select from 'react-select'
 
 const Authors = (props) => {
 
-  const [selectedAuthor, setSelectedAuthor] = useState(null)
+  const [authors, setAuthors] = useState(null)
   const [born, setBorn] = useState('')
-
+  const [selectedAuthor, setSelectedAuthor] = useState(null)
+  
+  const [getAuthors, result] = useLazyQuery(ALL_AUTHORS)
   const [setAuthorBirthyear] = useMutation(EDIT_BIRTHYEAR)
+
+  useEffect(() => {
+    if (result.data) {
+      setAuthors(result.data.allAuthors)
+    }
+  }, [result])
 
   if (!props.show) {
     return null
+  }
+
+  if (!result.called) {
+    getAuthors()
+  }
+
+  if (!authors) {
+    return <div>loading...</div>
   }
 
   const setBirthyear = (event) => {
@@ -27,14 +43,14 @@ const Authors = (props) => {
     setBorn('')
   }
 
-  const options = props.authors.map(author => {
+  const options = authors.map(author => {
     return {
       value: author,
       label: author.name
     }
   })
 
-  const addBookForm = () => {
+  const modifyBornForm = () => {
     return (
       <div>
         <h3>Set birthyear</h3>
@@ -73,7 +89,7 @@ const Authors = (props) => {
               books
             </th>
           </tr>
-          {props.authors.map(a =>
+          {authors.map(a =>
             <tr key={a.name}>
               <td>{a.name}</td>
               <td>{a.born}</td>
@@ -82,7 +98,7 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
-      {props.token ? addBookForm() : null}
+      {props.token ? modifyBornForm() : null}
     </div>
   )
 }

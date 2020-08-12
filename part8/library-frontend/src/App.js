@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useQuery, useApolloClient, useLazyQuery } from '@apollo/client'
+import { useApolloClient, useLazyQuery } from '@apollo/client'
 
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -7,7 +7,7 @@ import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
 
-import { ALL_AUTHORS, ALL_BOOKS, GET_USER } from './queries'
+import { GET_USER } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -15,13 +15,9 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const client = useApolloClient()
-
-  const query = (page === 'authors')
-    ? ALL_AUTHORS
-    : ALL_BOOKS
-
-  const queryResult = useQuery(query)
-  const [getUser, result] = useLazyQuery(GET_USER)
+  const [getUser, result] = useLazyQuery(GET_USER, {
+    fetchPolicy: 'no-cache'
+  })
 
   useEffect(() => {
     if (result.data) {
@@ -29,34 +25,25 @@ const App = () => {
     }
   }, [result])
 
+  // Check the local storage for a token
   useEffect(() => {
     if (localStorage.getItem('library-user-token')) {
       setToken(localStorage.getItem('library-user-token'))
     }
   }, [])
 
-  if (queryResult.loading || (page === 'recommend' && !user)) {
-    return <div>loading...</div>
-  }
-
   const logout = () => {
-    setToken(null)
     setPage('login')
+    setToken(null)
     setUser(null)
     localStorage.clear()
     client.resetStore()
   }
 
   const getRecommended = () => {
-    // client.resetStore() apparently refetches all queries.
-    // Upon refetching queries, the token has not been set yet and
-    // therefore query 'me' returns null. Then, calling getUser()
-    // fetches data from the cache (which is null) and user is set to null.
-    // Another workaround would be to call client.clearStore() instead.
-    // However, in that case the other queries have to be refetched manually.
-    (result.called && !result.data.me)
-      ? result.refetch()
-      : getUser()
+    if (!user) {
+      getUser()
+    }
     setPage('recommend')
   }
 
@@ -90,12 +77,10 @@ const App = () => {
       <Authors
         show={page === 'authors'}
         token={token}
-        authors={queryResult.data.allAuthors}
       />
 
       <Books
         show={page === 'books'}
-        books={queryResult.data.allBooks}
       />
 
       <NewBook
@@ -111,7 +96,6 @@ const App = () => {
       <Recommendations
         show={page === 'recommend'}
         user={user}
-        books={queryResult.data.allBooks}
       />
 
     </div>
