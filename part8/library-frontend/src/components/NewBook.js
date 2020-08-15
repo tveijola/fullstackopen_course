@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { CREATE_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../queries'
+import { CREATE_BOOK, ALL_AUTHORS, ALL_BOOKS, GENRE_BOOKS } from '../queries'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -10,7 +10,54 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }],
+    update: (store, response) => {
+      // Try-catch blogs needed in case query not in cache
+      try {
+        const authorsInStore = store.readQuery({ query: ALL_AUTHORS })
+        store.writeQuery({
+          query: ALL_AUTHORS,
+          data: {
+            ...authorsInStore,
+            allAuthors: [...authorsInStore.allAuthors, response.data.addBook]
+          }
+        })
+      } catch (error) {
+        console.log('tried reading non-existing query from cache')
+      }
+
+      try {
+        const booksInStore = store.readQuery({ query: ALL_BOOKS })
+        store.writeQuery({
+          query: ALL_BOOKS,
+          data: {
+            ...booksInStore,
+            allBooks: [...booksInStore.allBooks, response.data.addBook]
+          }
+        })
+      } catch (error) {
+        console.log('tried reading non-existing query from cache')
+      }
+
+      // Try updating cache for each genre
+      response.data.addBook.genres.forEach(genre => {
+        try {
+          const genreBooksInStore = store.readQuery({
+            query: GENRE_BOOKS,
+            variables: { genre: genre }
+          })
+          store.writeQuery({
+            query: GENRE_BOOKS,
+            variables: { genre: genre },
+            data: {
+              ...genreBooksInStore,
+              allBooks: [...genreBooksInStore.allBooks, response.data.addBook]
+            }
+          })
+        } catch (error) {
+          console.log('tried reading non-existing query from cache')
+        }
+      })
+    }
   })
 
   if (!props.show) {
@@ -19,7 +66,7 @@ const NewBook = (props) => {
 
   const submit = async (event) => {
     event.preventDefault()
-    createBook({ variables: { title, author, published: parseInt(published), genres }})
+    createBook({ variables: { title, author, published: parseInt(published), genres } })
     setTitle('')
     setPublished('')
     setAuhtor('')
