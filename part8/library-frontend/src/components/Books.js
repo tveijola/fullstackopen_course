@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ALL_BOOKS } from '../queries'
+import { ALL_BOOKS, GENRE_BOOKS } from '../queries'
 import { useLazyQuery } from '@apollo/client'
 
 const Books = (props) => {
@@ -9,10 +9,7 @@ const Books = (props) => {
   const [filteredBooks, setFilteredBooks] = useState(null)
 
   const [getBooks, result] = useLazyQuery(ALL_BOOKS)
-  const [getFilteredBooks, filteredResult] = useLazyQuery(
-    ALL_BOOKS,
-    { variables: { genre: filterGenre } }
-  )
+  const [getFilteredBooks, filteredResult] = useLazyQuery(GENRE_BOOKS)
 
   useEffect(() => {
     if (result.data) {
@@ -53,7 +50,11 @@ const Books = (props) => {
 
   const filterBooks = (genre) => {
     setFilterGenre(genre)
-    getFilteredBooks()
+    if (genre) {
+      getFilteredBooks({ variables: { genre: genre } })
+    } else {
+      setFilteredBooks(null)
+    }
   }
 
   const filterMessage = () => {
