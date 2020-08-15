@@ -35,7 +35,7 @@ ${BOOK_DETAILS}
 `
 
 export const GENRE_BOOKS = gql`
-query ($genre: String) {
+query ($genre: String!) {
   allBooks (
     genre: $genre
   ) {
@@ -100,4 +100,13 @@ mutation login($username: String!, $password: String!) {
     value
   }
 }
+`
+
+export const BOOK_ADDED = gql`
+subscription {
+  bookAdded {
+    ...BookDetails
+  }
+}
+${BOOK_DETAILS}
 `
