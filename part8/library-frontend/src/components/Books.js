@@ -6,14 +6,25 @@ const Books = (props) => {
 
   const [filterGenre, setFilterGenre] = useState(null)
   const [books, setBooks] = useState(null)
+  const [filteredBooks, setFilteredBooks] = useState(null)
 
   const [getBooks, result] = useLazyQuery(ALL_BOOKS)
+  const [getFilteredBooks, filteredResult] = useLazyQuery(
+    ALL_BOOKS,
+    { variables: { genre: filterGenre } }
+  )
 
   useEffect(() => {
     if (result.data) {
       setBooks(result.data.allBooks)
     }
   }, [result])
+
+  useEffect(() => {
+    if (filteredResult.data) {
+      setFilteredBooks(filteredResult.data.allBooks)
+    }
+  }, [filteredResult])
 
   if (!props.show) {
     return null
@@ -36,17 +47,20 @@ const Books = (props) => {
     })
   })
 
-  const filteredBooks = filterGenre
-    ? books.filter(book => {
-      return book.genres.some(genre => filterGenre.includes(genre))
-    })
+  const shownBooks = (filterGenre && filteredBooks)
+    ? filteredBooks
     : books
+
+  const filterBooks = (genre) => {
+    setFilterGenre(genre)
+    getFilteredBooks()
+  }
 
   const filterMessage = () => {
     return (
       <div>
         Showing books in genre <b>{filterGenre}</b>
-        <button style={{ margin: 15 }} onClick={() => setFilterGenre(null)}>Clear filter</button>
+        <button style={{ margin: 15 }} onClick={() => filterBooks(null)}>Clear filter</button>
       </div>
     )
   }
@@ -54,7 +68,7 @@ const Books = (props) => {
   return (
     <div>
       <h2>books</h2>
-      {filterGenre ? filterMessage() : null}
+      {filterGenre && filteredBooks ? filterMessage() : null}
       <table>
         <tbody>
           <tr>
@@ -66,7 +80,7 @@ const Books = (props) => {
               published
             </th>
           </tr>
-          {filteredBooks.map(a =>
+          {shownBooks.map(a =>
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -81,7 +95,7 @@ const Books = (props) => {
       {allGenres.map(genre =>
         <button
           key={genre}
-          onClick={() => setFilterGenre(genre)}>
+          onClick={() => filterBooks(genre)}>
           {genre}
         </button>
       )}
