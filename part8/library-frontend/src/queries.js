@@ -16,9 +16,10 @@ fragment BookDetails on Book {
   title,
   published,
   author{
-    name
-    born
-    bookCount
+    name,
+    born,
+    bookCount,
+    id
   },
   genres,
   id

@@ -7,7 +7,7 @@ import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
 
-import { GET_USER, BOOK_ADDED } from './queries'
+import { GET_USER, BOOK_ADDED, ALL_BOOKS, GENRE_BOOKS } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -24,7 +24,7 @@ const App = () => {
       setUser(result.data.me)
     }
   }, [result])
-  
+
   useEffect(() => {
     if (token) {
       getUser()
@@ -38,10 +38,47 @@ const App = () => {
     }
   }, [])
 
+  const updateCacheWith = (addedBook) => {
+
+    const includedIn = (set, object) => set.some(book => book.id === object.id)
+
+    // Try-catch blocks needed in case query is not found in cache,
+    // in which case an error is thrown.
+    try {
+      const booksInStore = client.readQuery({ query: ALL_BOOKS })
+      if (!includedIn(booksInStore.allBooks, addedBook)) {
+        client.writeQuery({
+          query: ALL_BOOKS,
+          data: { allBooks: booksInStore.allBooks.concat(addedBook) }
+        })
+      }
+    } catch (error) {
+      console.log('tried reading non-existing query from cache')
+    }
+    // Try to update queries for each book genre
+    addedBook.genres.forEach(genre => {
+      try {
+        const genreBooksInStore = client.readQuery({
+          query: GENRE_BOOKS,
+          variables: { genre: genre }
+        })
+        if (!includedIn(genreBooksInStore.allBooks, addedBook)) {
+          client.writeQuery({
+            query: GENRE_BOOKS,
+            variables: { genre: genre },
+            data: { allBooks: genreBooksInStore.allBooks.concat(addedBook) }
+          })
+        }
+      } catch (error) {
+        console.log('tried reading non-existing query from cache')
+      }
+    })
+  }
+
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       window.alert(`New book ${subscriptionData.data.bookAdded.title} was added!`)
-      console.log(subscriptionData)
+      updateCacheWith(subscriptionData.data.bookAdded)
     }
   })
 
@@ -91,6 +128,7 @@ const App = () => {
 
       <NewBook
         show={page === 'add'}
+        updateCacheWith={updateCacheWith}
       />
 
       <LoginForm
