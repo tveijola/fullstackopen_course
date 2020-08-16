@@ -1,3 +1,8 @@
+interface exerciseArguments {
+  hours: Array<number>;
+  target: number;
+}
+
 interface Result {
   periodLength: number;
   trainingDays: number;
@@ -8,8 +13,24 @@ interface Result {
   average: number;
 }
 
-const calculateExercises = (hours: Array<number>, target: number): Result => {
+const parseExerciseArguments = (args: Array<string>): exerciseArguments => {
+  if (args.length < 4) throw new Error('Not enough arguments');
 
+  if (!isNaN(Number(args[2])) && args.slice(3).every(val => !isNaN(Number(val)))) {
+    return {
+      hours: args.slice(3).map(val => Number(val)),
+      target: Number(args[2])
+    }
+  } else {
+    throw new Error('Provided values invalid');
+  }
+}
+
+const calculateExercises = (values: exerciseArguments): Result => {
+  const { hours, target } = values;
+  if (target <= 0) {
+    throw new Error('Target must be greater than zero!');
+  }
   const average = hours.reduce((total, current) => total + current) / hours.length;
   const precentile = average / target;
   let rating = 1;
@@ -36,4 +57,9 @@ const calculateExercises = (hours: Array<number>, target: number): Result => {
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+try {
+  const arg = parseExerciseArguments(process.argv);
+  console.log(calculateExercises(arg));
+} catch (error) {
+  console.log('ERROR! Message:', error.message);
+}
