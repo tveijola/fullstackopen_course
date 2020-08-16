@@ -1,4 +1,5 @@
 const { ApolloServer, UserInputError, gql, AuthenticationError, PubSub } = require('apollo-server')
+const DataLoader = require('dataloader')
 const mongoose = require('mongoose')
 const Book = require('./models/Book')
 const Author = require('./models/Author')
@@ -96,8 +97,8 @@ const resolvers = {
     }
   },
   Author: {
-    bookCount: (root) => {
-      return Book.find({ author: { $in: [root.id] } }).countDocuments()
+    bookCount: async (root, args, { loaders }) => {
+      return (await loaders.bookCount.load(root.id)).length
     }
   },
   Mutation: {
@@ -164,6 +165,13 @@ const resolvers = {
   }
 }
 
+const batchBooks = async (keys) => {
+  const books = await Book.find({ author: { $in: keys } })
+  return keys.map(key => books.filter(book => book.author.toString() === key))
+}
+
+const bookLoader = new DataLoader(keys => batchBooks(keys))
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -174,7 +182,17 @@ const server = new ApolloServer({
         auth.substring(7), process.env.SECRET
       )
       const currentUser = await User.findById(decodedToken.id)
-      return { currentUser }
+      return {
+        currentUser,
+        loaders: {
+          bookCount: bookLoader
+        }
+      }
+    }
+    return {
+      loaders: {
+        bookCount: bookLoader
+      }
     }
   }
 })
