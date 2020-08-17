@@ -16,8 +16,7 @@ const parseBmiArguments = (args: Array<string>): bmiArguments => {
   }
 }
 
-const calculateBmi = (values: bmiArguments): string => {
-  const { height, weight } = values
+const calculateBmi = (height: number, weight: number): string => {
   if (weight <= 0 || height <= 0) {
     throw new Error('Height and weight must be greater than zero!');
   }
@@ -33,8 +32,12 @@ const calculateBmi = (values: bmiArguments): string => {
 }
 
 try {
-  const arg = parseBmiArguments(process.argv);
-  console.log(calculateBmi(arg));
+  if (process.argv.length > 2) {
+    const arg = parseBmiArguments(process.argv);
+    console.log(calculateBmi(arg.height, arg.weight));
+  }
 } catch (error) {
   console.log('ERROR! Message:', error.message);
 }
+
+export { calculateBmi };
