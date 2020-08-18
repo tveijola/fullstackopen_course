@@ -1,5 +1,5 @@
 interface exerciseArguments {
-  hours: Array<number>;
+  daily_exercises: Array<number>;
   target: number;
 }
 
@@ -18,7 +18,7 @@ const parseExerciseArguments = (args: Array<string>): exerciseArguments => {
 
   if (!isNaN(Number(args[2])) && args.slice(3).every(val => !isNaN(Number(val)))) {
     return {
-      hours: args.slice(3).map(val => Number(val)),
+      daily_exercises: args.slice(3).map(val => Number(val)),
       target: Number(args[2])
     };
   } else {
@@ -27,7 +27,7 @@ const parseExerciseArguments = (args: Array<string>): exerciseArguments => {
 };
 
 const calculateExercises = (values: exerciseArguments): Result => {
-  const { hours, target } = values;
+  const { daily_exercises: hours, target } = values;
   if (target <= 0) {
     throw new Error('Target must be greater than zero!');
   }
@@ -57,9 +57,13 @@ const calculateExercises = (values: exerciseArguments): Result => {
   };
 };
 
-try {
-  const arg = parseExerciseArguments(process.argv);
-  console.log(calculateExercises(arg));
-} catch (error) {
-  console.log('ERROR! Message:', error);
+if (require.main === module) {
+  try {
+    const arg = parseExerciseArguments(process.argv);
+    console.log(calculateExercises(arg));
+  } catch (error) {
+    console.log('ERROR! Message:', error);
+  }
 }
+
+export { exerciseArguments, Result, calculateExercises };
