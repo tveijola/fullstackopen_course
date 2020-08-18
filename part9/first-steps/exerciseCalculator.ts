@@ -20,11 +20,11 @@ const parseExerciseArguments = (args: Array<string>): exerciseArguments => {
     return {
       hours: args.slice(3).map(val => Number(val)),
       target: Number(args[2])
-    }
+    };
   } else {
     throw new Error('Provided values invalid');
   }
-}
+};
 
 const calculateExercises = (values: exerciseArguments): Result => {
   const { hours, target } = values;
@@ -54,12 +54,12 @@ const calculateExercises = (values: exerciseArguments): Result => {
     success: average > target,
     rating: rating,
     ratingDescription: ratingDescription,
-  }
-}
+  };
+};
 
 try {
   const arg = parseExerciseArguments(process.argv);
   console.log(calculateExercises(arg));
 } catch (error) {
-  console.log('ERROR! Message:', error.message);
+  console.log('ERROR! Message:', error);
 }

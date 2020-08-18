@@ -10,11 +10,11 @@ const parseBmiArguments = (args: Array<string>): bmiArguments => {
     return {
       height: Number(args[2]),
       weight: Number(args[3])
-    }
+    };
   } else {
     throw new Error('Provided values must be numbers!');
   }
-}
+};
 
 const calculateBmi = (height: number, weight: number): string => {
   if (weight <= 0 || height <= 0) {
@@ -29,7 +29,7 @@ const calculateBmi = (height: number, weight: number): string => {
   if (bmi <= 35) return 'Obese Class I (Moderetely obese)';
   if (bmi <= 40) return 'Obese Class II (Severely obese)';
   return 'Obese Class III (Very severely obese)';
-}
+};
 
 // Check if ran directly or imported as a module
 if (require.main === module) {
@@ -37,7 +37,7 @@ if (require.main === module) {
     const arg = parseBmiArguments(process.argv);
     console.log(calculateBmi(arg.height, arg.weight));
   } catch (error) {
-    console.log('ERROR! Message:', error.message);
+    console.log('ERROR! Message:', error);
   }
 }
 
