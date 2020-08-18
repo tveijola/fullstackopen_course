@@ -31,13 +31,14 @@ const calculateBmi = (height: number, weight: number): string => {
   return 'Obese Class III (Very severely obese)';
 }
 
-try {
-  if (process.argv.length > 2) {
+// Check if ran directly or imported as a module
+if (require.main === module) {
+  try {
     const arg = parseBmiArguments(process.argv);
     console.log(calculateBmi(arg.height, arg.weight));
+  } catch (error) {
+    console.log('ERROR! Message:', error.message);
   }
-} catch (error) {
-  console.log('ERROR! Message:', error.message);
 }
 
 export { calculateBmi };
