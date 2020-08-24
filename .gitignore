@@ -47,6 +47,9 @@ requests/
 # TypeScript v1 declaration files
 typings/
 
+# Transcompiled TypeSctipt files
+build/
+
 # TypeScript cache
 *.tsbuildinfo
 
