@@ -1,4 +1,4 @@
-import { NewPatient } from './types';
+import { NewPatient, Gender } from './types';
 
 // It turns out that typing obj as 'any' leads to error 'Unsafe member access .member on an any value'
 // for all lines where obj.member is accessed. This solution found from Typescript official documentation 
@@ -38,8 +38,8 @@ const parseSsn = (ssn: unknown): string => {
   return ssn;
 };
 
-const parseGender = (gender: unknown): string => {
-  if (!gender || !isString(gender) || !isGender(gender)) {
+const parseGender = (gender: unknown): Gender => {
+  if (!gender || !isGender(gender)) {
     throw new Error('Incorrect or missing parameter: gender');
   }
   return gender;
@@ -60,8 +60,9 @@ const isDate = (date: string): boolean => {
   return Boolean(Date.parse(date));
 };
 
-const isGender = (gender: string): boolean => {
-  return ['male', 'female', 'other'].includes(gender.toLowerCase());
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isGender = (gender: any): gender is Gender => {
+  return Object.values(Gender).includes(gender);
 };
 
 export default toNewPatient;
