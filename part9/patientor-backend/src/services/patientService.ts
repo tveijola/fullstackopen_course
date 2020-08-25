@@ -1,5 +1,5 @@
-import patientData from '../../data/patients.json';
-import { Patient, PatientSafeInfo } from '../types';
+import patientData from '../../data/patientsInitial.json';
+import { Patient, PatientSafeInfo, NewPatient } from '../types';
 
 const patients: Array<Patient> = patientData as Array<Patient>;
 
@@ -8,7 +8,7 @@ const getEntries = (): Array<Patient> => {
 };
 
 const getSafeEntries = (): Array<PatientSafeInfo> => {
-  return patients.map(({id, name, dateOfBirth, gender, occupation}) => {
+  return patients.map(({ id, name, dateOfBirth, gender, occupation }) => {
     return {
       id,
       name,
@@ -19,7 +19,17 @@ const getSafeEntries = (): Array<PatientSafeInfo> => {
   });
 };
 
+const addPatient = (newPatient: NewPatient): Patient => {
+  const addedPatient: Patient = {
+    ...newPatient,
+    id: (patients.length + 1).toString()
+  };
+  patients.push(addedPatient);
+  return addedPatient;
+};
+
 export default {
   getEntries,
-  getSafeEntries
+  getSafeEntries,
+  addPatient
 };
