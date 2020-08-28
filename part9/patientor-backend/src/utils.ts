@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from './types';
+import { NewPatient, Gender, Entry } from './types';
 
 // It turns out that typing obj as 'any' leads to error 'Unsafe member access .member on an any value'
 // for all lines where obj.member is accessed. This solution found from Typescript official documentation 
@@ -13,7 +13,8 @@ const toNewPatient = (obj: Record<string, unknown> | null): NewPatient => {
     dateOfBirth: parseDate(obj.dateOfBirth),
     ssn: parseSsn(obj.ssn),
     gender: parseGender(obj.gender),
-    occupation: parseOccupation(obj.occupation)
+    occupation: parseOccupation(obj.occupation),
+    entries: Array<Entry>()
   };
 };
 

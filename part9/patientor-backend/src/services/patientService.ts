@@ -12,6 +12,10 @@ const getEntries = (): Array<Patient> => {
   return patients;
 };
 
+const getPatient = (id: string): Patient | undefined => {
+  return patients.find(p => p.id === id);
+};
+
 const getSafeEntries = (): Array<PatientSafeInfo> => {
   return patients.map(({ id, name, dateOfBirth, gender, occupation }) => {
     return {
@@ -35,6 +39,7 @@ const addPatient = (newPatient: NewPatient): Patient => {
 
 export default {
   getEntries,
+  getPatient,
   getSafeEntries,
   addPatient
 };
