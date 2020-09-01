@@ -14,7 +14,7 @@ const toNewPatient = (obj: Record<string, unknown> | null): NewPatient => {
     ssn: parseSsn(obj.ssn),
     gender: parseGender(obj.gender),
     occupation: parseOccupation(obj.occupation),
-    entries: Array<Entry>()
+    entries: parseEntries(obj.entries)
   };
 };
 
@@ -51,6 +51,20 @@ const parseOccupation = (occupation: unknown): string => {
     throw new Error('Incorrect or missing parameter: occupation');
   }
   return occupation;
+};
+
+const parseEntries = (entries: unknown): Entry[] => {
+  if (!entries || !(entries instanceof Array)) {
+    throw new Error('Incorrect or missing parameter: entries');
+  }
+  return entries.map(entry => parseEntry(entry));
+};
+
+const parseEntry = (entry: Entry): Entry => {
+  if (!entry.type || !["Hospital", "OccupationalHealthcare", "HealthCheck"].includes(entry.type)) {
+    throw new Error('Incorrect or missing parameter: entry type');
+  }
+  return entry;
 };
 
 const isString = (text: unknown): text is string => {
