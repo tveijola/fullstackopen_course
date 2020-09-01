@@ -3,8 +3,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useStateValue, updatePatient } from '../state';
 import { apiBaseUrl } from '../constants';
-import { Patient, Gender } from '../types';
-import { Header, Icon } from 'semantic-ui-react';
+import { Patient, Gender, Entry } from '../types';
+import { Header, Icon, Divider } from 'semantic-ui-react';
 
 const PatientPage: React.FC = () => {
 
@@ -27,6 +27,7 @@ const PatientPage: React.FC = () => {
 
   if (!patient.ssn) {
     fetchPatient();
+    return null;
   }
 
   let icon = <Icon name='genderless' />;
@@ -36,6 +37,21 @@ const PatientPage: React.FC = () => {
     icon = <Icon name='mars' />;
   }
 
+  const listDiagnosisCodes = (entry: Entry) => {
+    if (!entry.diagnosisCodes) {
+      return null;
+    }
+    return (
+      <ul>
+        {entry.diagnosisCodes.map((code, index) => {
+          return (
+            <li key={index}>{code}</li>
+          );
+        })}
+      </ul>
+    );
+  };
+
   return (
     <div>
       <Header as="h1">
@@ -44,6 +60,18 @@ const PatientPage: React.FC = () => {
       <div>SSN: {patient.ssn}</div>
       <div>Occupation: {patient.occupation}</div>
       <div>Date of birth: {patient.dateOfBirth}</div>
+      <Divider />
+      <Header as="h2">
+        Entries
+      </Header>
+      {patient.entries.map((entry, index) => {
+        return (
+          <div key={index}>
+            {entry.date} {entry.description}
+            {listDiagnosisCodes(entry)}
+          </div>
+        );
+      })}
     </div>
   );
 };
