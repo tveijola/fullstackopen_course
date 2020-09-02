@@ -1,6 +1,6 @@
 import express from 'express';
 import patientService from '../services/patientService';
-import toNewPatient from '../utils';
+import { toNewPatient, toNewEntry } from '../utils';
 
 const router = express.Router();
 
@@ -20,6 +20,18 @@ router.post('/', (req, res) => {
   } catch (e) {
     // Trying to access e.message without type checking leads
     // to 'Unsafe member access .message on an any value'
+    if (e instanceof Error) {
+      res.status(400).send(e.message);
+    }
+  }
+});
+
+router.post('/:id/entries', (req, res) => {
+  try {
+    const newEntry = toNewEntry(req.body);
+    const updatedPatient = patientService.addEntryToPatient(req.params.id, newEntry);
+    res.send(updatedPatient);
+  } catch (e) {
     if (e instanceof Error) {
       res.status(400).send(e.message);
     }
