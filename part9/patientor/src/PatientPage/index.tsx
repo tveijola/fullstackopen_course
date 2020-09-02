@@ -8,7 +8,7 @@ import { Header, Icon, Divider } from 'semantic-ui-react';
 
 const PatientPage: React.FC = () => {
 
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients, diagnoses }, dispatch] = useStateValue();
   const { id } = useParams<{ id: string }>();
   const patient = patients[id];
 
@@ -45,7 +45,9 @@ const PatientPage: React.FC = () => {
       <ul>
         {entry.diagnosisCodes.map((code, index) => {
           return (
-            <li key={index}>{code}</li>
+            <li key={index}>
+              {code} {diagnoses[code].name}
+            </li>
           );
         })}
       </ul>
@@ -67,7 +69,7 @@ const PatientPage: React.FC = () => {
       {patient.entries.map((entry, index) => {
         return (
           <div key={index}>
-            {entry.date} {entry.description}
+            {entry.date} <b>{entry.description}</b>
             {listDiagnosisCodes(entry)}
           </div>
         );
