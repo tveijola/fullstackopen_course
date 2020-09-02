@@ -3,8 +3,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useStateValue, updatePatient } from '../state';
 import { apiBaseUrl } from '../constants';
-import { Patient, Gender, Entry } from '../types';
-import { Header, Icon, Divider } from 'semantic-ui-react';
+import { Patient, Gender, Entry, HealthCheckEntry, OccupationalHealthcareEntry, HospitalEntry } from '../types';
+import { Header, Icon, Divider, Message } from 'semantic-ui-react';
 
 const PatientPage: React.FC = () => {
 
@@ -30,12 +30,9 @@ const PatientPage: React.FC = () => {
     return null;
   }
 
-  let icon = <Icon name='genderless' />;
-  if (patient.gender === Gender.Female) {
-    icon = <Icon name='venus' />;
-  } else if (patient.gender === Gender.Male) {
-    icon = <Icon name='mars' />;
-  }
+  const assertNever = (value: never): never => {
+    throw new Error(`Unrecognized entry type: ${JSON.stringify(value)}`);
+  };
 
   const listDiagnosisCodes = (entry: Entry) => {
     if (!entry.diagnosisCodes) {
@@ -54,6 +51,107 @@ const PatientPage: React.FC = () => {
     );
   };
 
+  const HealthCheckEntryDetails: React.FC<{ entry: HealthCheckEntry }> = ({ entry }) => {
+
+    let icon = null;
+    switch (entry.healthCheckRating) {
+      case 0:
+        icon = <Icon name="heart" color="green" />;
+        break;
+      case 1:
+        icon = <Icon name="heart" color="yellow" />;
+        break;
+      case 2:
+        icon = <Icon name="heart" color="orange" />;
+        break;
+      case 3:
+        icon = <Icon name="heart" color="red" />;
+        break;
+      default:
+        break;
+    }
+
+    return (
+      <Message>
+        <Message.Header>
+          {entry.date} <Icon name="doctor" size="large" />
+        </Message.Header>
+        <Message.Content>
+          <div>{entry.description}</div>
+          <div>{icon}</div>
+          {listDiagnosisCodes(entry)}
+        </Message.Content>
+      </Message>
+    );
+  };
+
+  const HospitalEntryDetails: React.FC<{ entry: HospitalEntry }> = ({ entry }) => {
+    return (
+      <Message>
+        <Message.Header>
+          {entry.date} <Icon name="hospital" size="large" />
+        </Message.Header>
+        <Message.Content>
+          <div>{entry.description}</div>
+          {listDiagnosisCodes(entry)}
+          <Divider />
+          <div>Discharge date: {entry.discharge.date}</div>
+          <div>Dischrage criteria: {entry.discharge.criteria}</div>
+        </Message.Content>
+      </Message>
+    );
+  };
+
+  const OccupationalHealthcareEntryDetails: React.FC<{ entry: OccupationalHealthcareEntry }> = ({ entry }) => {
+
+    const sickLeaveInfo = (entry: OccupationalHealthcareEntry) => {
+      if (entry.sickLeave) {
+        return (
+          <div>
+            <Divider />
+            <div>Sickleave period: </div>
+            <div>{entry.sickLeave.startDate} -- {entry.sickLeave.endDate}</div>
+          </div>
+        );
+      }
+      return null;
+    };
+
+    return (
+      <Message>
+        <Message.Header>
+          {entry.date} <Icon name="stethoscope" size="large" /> {entry.employerName}
+        </Message.Header>
+        <Message.Content>
+          {entry.description}
+          {listDiagnosisCodes(entry)}
+          {sickLeaveInfo(entry)}
+        </Message.Content>
+      </Message>
+    );
+  };
+
+  const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+    switch (entry.type) {
+      case "HealthCheck":
+        return <HealthCheckEntryDetails entry={entry} />;
+      case "Hospital":
+        return <HospitalEntryDetails entry={entry} />;
+      case "OccupationalHealthcare":
+        return <OccupationalHealthcareEntryDetails entry={entry} />;
+      default:
+        return assertNever(entry);
+    }
+  };
+
+  let icon = <Icon name='genderless' />;
+  if (patient.gender === Gender.Female) {
+    icon = <Icon name='venus' />;
+  } else if (patient.gender === Gender.Male) {
+    icon = <Icon name='mars' />;
+  }
+
+
   return (
     <div>
       <Header as="h1">
@@ -68,14 +166,12 @@ const PatientPage: React.FC = () => {
       </Header>
       {patient.entries.map((entry, index) => {
         return (
-          <div key={index}>
-            {entry.date} <b>{entry.description}</b>
-            {listDiagnosisCodes(entry)}
-          </div>
+          <EntryDetails key={index} entry={entry} />
         );
       })}
     </div>
   );
 };
+
 
 export default PatientPage;
