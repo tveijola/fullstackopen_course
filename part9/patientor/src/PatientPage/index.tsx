@@ -1,14 +1,18 @@
 import React from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { useStateValue, updatePatient } from '../state';
+import { useStateValue, updatePatient, addEntryToPatient } from '../state';
 import { apiBaseUrl } from '../constants';
-import { Patient, Gender, Entry, HealthCheckEntry, OccupationalHealthcareEntry, HospitalEntry } from '../types';
-import { Header, Icon, Divider, Message } from 'semantic-ui-react';
+import { Patient, Gender, Entry, HealthCheckEntry, OccupationalHealthcareEntry, HospitalEntry, NewEntry } from '../types';
+import { Header, Icon, Divider, Message, Button } from 'semantic-ui-react';
+import AddEntryModal from '../AddEntryModal';
 
 const PatientPage: React.FC = () => {
 
   const [{ patients, diagnoses }, dispatch] = useStateValue();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
+
   const { id } = useParams<{ id: string }>();
   const patient = patients[id];
 
@@ -29,6 +33,26 @@ const PatientPage: React.FC = () => {
     fetchPatient();
     return null;
   }
+
+  const openModal = (): void => setModalOpen(true);
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
+  const submitNewEntry = async (values: NewEntry) => {
+    try {
+      const { data: newEntry } = await axios.post<Entry>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        values
+      );
+      dispatch(addEntryToPatient(newEntry, id));
+      closeModal();
+    } catch (e) {
+      console.error(e.response.data);
+      setError(e.response.data.error);
+    }
+  };
 
   const assertNever = (value: never): never => {
     throw new Error(`Unrecognized entry type: ${JSON.stringify(value)}`);
@@ -151,7 +175,6 @@ const PatientPage: React.FC = () => {
     icon = <Icon name='mars' />;
   }
 
-
   return (
     <div>
       <Header as="h1">
@@ -162,13 +185,20 @@ const PatientPage: React.FC = () => {
       <div>Date of birth: {patient.dateOfBirth}</div>
       <Divider />
       <Header as="h2">
-        Entries
+        {'Entries '}
+        <Button onClick={() => openModal()}>Add new Entry</Button>
       </Header>
       {patient.entries.map((entry, index) => {
         return (
           <EntryDetails key={index} entry={entry} />
         );
       })}
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        onClose={closeModal}
+        error={error}
+      />
     </div>
   );
 };
