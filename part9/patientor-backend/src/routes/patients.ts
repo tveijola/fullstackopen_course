@@ -29,8 +29,8 @@ router.post('/', (req, res) => {
 router.post('/:id/entries', (req, res) => {
   try {
     const newEntry = toNewEntry(req.body);
-    const updatedPatient = patientService.addEntryToPatient(req.params.id, newEntry);
-    res.send(updatedPatient);
+    patientService.addEntryToPatient(req.params.id, newEntry);
+    res.send(newEntry);
   } catch (e) {
     if (e instanceof Error) {
       res.status(400).send(e.message);
