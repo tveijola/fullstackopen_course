@@ -148,8 +148,9 @@ const parseDiagnosisCodes = (codes: unknown): string[] | undefined => {
 };
 
 const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
-  if (!rating || !isHealthCheckRating(rating)) {
-    throw new Error('Incorrect or missing parameter: gender');
+  // Note: 0 is considered falsy so have to check for that
+  if ((!rating && rating !== 0) || !isHealthCheckRating(rating)) {
+    throw new Error('Incorrect or missing parameter: healtCheckRating');
   }
   return rating;
 };
