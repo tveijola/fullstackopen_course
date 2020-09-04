@@ -25,6 +25,8 @@ interface BaseEntry {
   diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
+export type EntryType = "HealthCheck" | "Hospital" | "OccupationalHealthcare";
+
 export interface HealthCheckEntry extends BaseEntry {
   type: "HealthCheck";
   healthCheckRating: HealthCheckRating;
